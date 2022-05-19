@@ -13,7 +13,9 @@
 ![konng0120-README-2022-05-18-16-39-39](https://raw.githubusercontent.com/psychonaut1f/a/main/img/konng0120-README-2022-05-18-16-39-39.png)
 - [05: 添加 middleware](https://github.com/fengwei2002/my-gin/commit/dcbe1e6e2305c1e30225c52cee3102ab3210bd16)
 ![konng0120-README-2022-05-18-20-42-58](https://raw.githubusercontent.com/psychonaut1f/a/main/img/konng0120-README-2022-05-18-20-42-58.png)
-
+- [06: 使用 template](https://github.com/fengwei2002/my-gin/commit/aaf7aabf190a58ccd3663d0a148885544fbafeeb) 封装 `"html/template"` 
+![konng0120-README-2022-05-19-16-09-07](https://raw.githubusercontent.com/psychonaut1f/a/main/img/konng0120-README-2022-05-19-16-09-07.png)
+- [07: 错误恢复]()
 
 </div>
 </details>
