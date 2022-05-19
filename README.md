@@ -1,5 +1,5 @@
 <details>
-<summary><strong> <a herf = ""> </a> HTTP web framework written in Go (koo)  </strong></summary>
+<summary><strong> HTTP web framework written in Go <a herf = "https://github.com/fengwei2002/my-gin"> (koo)</a> </strong></summary>
 <div>
 
 > file history: 
@@ -15,7 +15,7 @@
 ![konng0120-README-2022-05-18-20-42-58](https://raw.githubusercontent.com/psychonaut1f/a/main/img/konng0120-README-2022-05-18-20-42-58.png)
 - [06: 使用 template](https://github.com/fengwei2002/my-gin/commit/aaf7aabf190a58ccd3663d0a148885544fbafeeb) 封装 `"html/template"` 
 ![konng0120-README-2022-05-19-16-09-07](https://raw.githubusercontent.com/psychonaut1f/a/main/img/konng0120-README-2022-05-19-16-09-07.png)
-- [07: 错误恢复]()
-
+- [07: 错误恢复](https://github.com/fengwei2002/my-gin/commit/ee00d7471ca52987deea5e3ff697676b5510544d) 添加 recovery 中间件, Default 方法默认使用 logger 中间件 和 recovery 中间件
+![konng0120-README-2022-05-19-20-15-36](https://raw.githubusercontent.com/psychonaut1f/a/main/img/konng0120-README-2022-05-19-20-15-36.png)
 </div>
 </details>
