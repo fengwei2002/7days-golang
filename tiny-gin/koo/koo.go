@@ -5,11 +5,11 @@ import (
 	"log"
 	"net/http"
 	"path"
-	"strings"
+	"strings
 )
 
 // HandlerFunc defines the request handler used by gee
-type HandlerFunc func(*Context)
+type HandlerFunc func(*Context
 
 // Engine implement the interface of ServeHTTP
 type (
