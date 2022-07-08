@@ -33,16 +33,6 @@ func (schema *Schema) GetField(name string) *Field {
 	return schema.fieldMap[name]
 }
 
-// RecordValues return the values of dest 's member variables
-func (schema *Schema) RecordValues(dest interface{}) []interface{} {
-	destValue := reflect.Indirect(reflect.ValueOf(dest))
-	var fieldValues []interface{}
-	for _, field := range schema.Fields {
-		fieldValues = append(fieldValues, destValue.FieldByName(field.Name).Interface())
-	}
-	return fieldValues
-}
-
 type ITableName interface {
 	TableName() string
 }
@@ -84,4 +74,27 @@ func Parse(dest interface{}, d dialect.Dialect) *Schema {
 		}
 	}
 	return schema
+}
+
+// RecordValues return the values of dest 's member variables
+//  根据数据库中列的值，从对象中找出对应的值，按照顺序平铺
+/*
+INSERT 对应的 SQL 语句一般是这样的：
+INSERT INTO table_name(col1, col2, col3, ...) VALUES
+    (A1, A2, A3, ...),
+    (B1, B2, B3, ...),
+    ...
+在 ORM 框架中期望 Insert 的调用方式如下：
+s := orm.NewEngine("sqlite3", "gee.db").NewSession()
+u1 := &User{Name: "Tom", Age: 18}
+u2 := &User{Name: "Sam", Age: 25}
+s.Insert(u1, u2, ...)
+*/
+func (schema *Schema) RecordValues(dest interface{}) []interface{} {
+	destValue := reflect.Indirect(reflect.ValueOf(dest))
+	var fieldValues []interface{}
+	for _, field := range schema.Fields {
+		fieldValues = append(fieldValues, destValue.FieldByName(field.Name).Interface())
+	}
+	return fieldValues
 }

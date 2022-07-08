@@ -3,6 +3,7 @@ package session
 import (
 	"database/sql"
 	"strings"
+	"tinygorm/clause"
 	"tinygorm/dialect"
 	"tinygorm/log"
 	"tinygorm/schema"
@@ -23,6 +24,7 @@ type Session struct {
 	sqlVars  []interface{}   // 用户调用 raw 方法可以改变这两个变量的值
 	dialect  dialect.Dialect
 	refTable *schema.Schema
+	clause   clause.Clause
 }
 
 // New creates a instance of Session
@@ -37,6 +39,7 @@ func New(db *sql.DB, dialect dialect.Dialect) *Session {
 func (s *Session) Clear() {
 	s.sql.Reset()
 	s.sqlVars = nil
+	s.clause = clause.Clause{}
 }
 
 // DB returns *sql.DB
