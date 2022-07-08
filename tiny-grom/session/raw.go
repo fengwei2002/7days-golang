@@ -3,7 +3,9 @@ package session
 import (
 	"database/sql"
 	"strings"
+	"tinygorm/dialect"
 	"tinygorm/log"
+	"tinygorm/schema"
 )
 
 /*
@@ -16,14 +18,19 @@ import (
 // Session keep a pointer to sql.DB and provides all execution of all
 // kind of database operations.
 type Session struct {
-	db      *sql.DB         // 使用 sql.Open 方法连接数据库成功之后返回的指针
-	sql     strings.Builder // 第二个和第三个变量用来拼接 sql 语句和 sql 语句中占位符的对应 value
-	sqlVars []interface{}   // 用户调用 raw 方法可以改变这两个变量的值
+	db       *sql.DB         // 使用 sql.Open 方法连接数据库成功之后返回的指针
+	sql      strings.Builder // 第二个和第三个变量用来拼接 sql 语句和 sql 语句中占位符的对应 value
+	sqlVars  []interface{}   // 用户调用 raw 方法可以改变这两个变量的值
+	dialect  dialect.Dialect
+	refTable *schema.Schema
 }
 
 // New creates a instance of Session
-func New(db *sql.DB) *Session {
-	return &Session{db: db}
+func New(db *sql.DB, dialect dialect.Dialect) *Session {
+	return &Session{
+		db:      db,
+		dialect: dialect,
+	}
 }
 
 // Clear initialize the state of a session

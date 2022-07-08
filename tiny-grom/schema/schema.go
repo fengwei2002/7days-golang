@@ -1,0 +1,87 @@
+package schema
+
+import (
+	"go/ast"
+	"reflect"
+	"tinygorm/dialect"
+)
+
+/*
+
+实现最主要的 table to struct
+
+*/
+
+// Field represents a column of database
+type Field struct {
+	Name string // 字段名
+	Type string // 类型 type
+	Tag  string // 约束条件 tag
+}
+
+// Schema represents a table of database
+type Schema struct {
+	Model      interface{}       // 被映射的对象
+	Name       string            // 表名 name
+	Fields     []*Field          // 字段
+	FieldNames []string          // 包含所有的字段名，列名
+	fieldMap   map[string]*Field // 记录字段名和 field 的映射关系，方便之后直接使用，无需遍历 fields
+}
+
+// GetField returns field by name
+func (schema *Schema) GetField(name string) *Field {
+	return schema.fieldMap[name]
+}
+
+// RecordValues return the values of dest 's member variables
+func (schema *Schema) RecordValues(dest interface{}) []interface{} {
+	destValue := reflect.Indirect(reflect.ValueOf(dest))
+	var fieldValues []interface{}
+	for _, field := range schema.Fields {
+		fieldValues = append(fieldValues, destValue.FieldByName(field.Name).Interface())
+	}
+	return fieldValues
+}
+
+type ITableName interface {
+	TableName() string
+}
+
+// Parse a struct to a Schema instance
+// 将任意的对象解析为 schema 实例
+func Parse(dest interface{}, d dialect.Dialect) *Schema {
+	modelType := reflect.Indirect(reflect.ValueOf(dest)).Type()
+	// TypeOf() 和 valueOf() 是 reflect 的最基本的两个方法
+	// 用来返回入参的类型和值
+
+	var tableName string
+	t, ok := dest.(ITableName)
+	if !ok {
+		tableName = modelType.Name()
+	} else {
+		tableName = t.TableName()
+	}
+	schema := &Schema{
+		Model:    dest,
+		Name:     tableName,
+		fieldMap: make(map[string]*Field),
+	}
+
+	for i := 0; i < modelType.NumField(); i++ {
+		p := modelType.Field(i)
+		if !p.Anonymous && ast.IsExported(p.Name) {
+			field := &Field{
+				Name: p.Name,
+				Type: d.DataTypeOf(reflect.Indirect(reflect.New(p.Type))),
+				// 使用 reflect.Indirect 来获取指针指向的实例
+			}
+			if v, ok := p.Tag.Lookup("tinygorm"); ok {
+				field.Tag = v
+			}
+			schema.Fields = append(schema.Fields, field)
+			schema.FieldNames = append(schema.FieldNames, p.Name)
+			schema.fieldMap[p.Name] = field
+		}
+	}
+	return schema
+}
