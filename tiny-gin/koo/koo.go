@@ -5,11 +5,11 @@ import (
 	"log"
 	"net/http"
 	"path"
-	"strings
+	"strings"
 )
 
-// HandlerFunc defines the request handler used by gee
-type HandlerFunc func(*Context
+// HandlerFunc defines the request handler used by koo
+type HandlerFunc func(*Context)
 
 // Engine implement the interface of ServeHTTP
 type (
@@ -25,11 +25,11 @@ type (
 		router        *router
 		groups        []*RouterGroup     // store all groups
 		htmlTemplates *template.Template // for html render
-		funcMap       template.FuncMap   // for html render
+		funcMap       template.FuncMap   // for html render 1   fefewfewfe
 	}
 )
 
-// New is the constructor of gee.Engine
+// New is the constructor of koo.Engine
 func New() *Engine {
 	engine := &Engine{router: newRouter()}
 	engine.RouterGroup = &RouterGroup{engine: engine}
@@ -113,7 +113,7 @@ func (engine *Engine) LoadHTMLGlob(pattern string) {
 
 // Run defines the method to start a http server
 func (engine *Engine) Run(addr string) (err error) {
-	return http.ListenAndServe(addr, engine)
+	return http.ListenAndServe(addr, engine) // 使用  engine 接管所有的 http 请求
 }
 
 func (engine *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {

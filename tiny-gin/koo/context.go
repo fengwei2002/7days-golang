@@ -1,5 +1,15 @@
 package koo
 
+/*
+
+对于 web 服务来说，就是根据 *http.Request 构造响应 http.ResponseWriter
+
+但是这两个对象提供的接口的粒度太细了，每次调用都需要手写一遍 header 中的每一项
+
+所以可以进行一次封装，使得不需要触碰重复的代码
+
+*/
+
 import (
 	"encoding/json"
 	"fmt"
@@ -15,10 +25,12 @@ type Context struct {
 	// 源参数
 	Writer http.ResponseWriter
 	Req    *http.Request
+
 	// 请求的信息
 	Path   string
 	Method string
 	Params map[string]string // 将路由解析后的参数存储到 Params 中
+
 	// 返回的信息
 	StatusCode int
 	// 自己添加的中间件
@@ -41,6 +53,8 @@ func newContext(w http.ResponseWriter, req *http.Request) *Context {
 }
 
 // Next 方法，对于一个 context，处理从 index 开始之后所有的 handlerFunc
+// index是记录当前执行到第几个中间件，当在中间件中调用Next方法时，
+// 控制权交给了下一个中间件，直到调用到最后一个中间件，然后再从后往前，调用每个中间件在Next方法之后定义的部分。
 func (c *Context) Next() {
 	c.index++
 	s := len(c.handlers)
