@@ -158,7 +158,7 @@ func (server *Server) handleRequest(cc codec.Codec, req *request, sending *sync.
 	// day 1, just print argv and send a hello message
 	defer wg.Done()
 	log.Println(req.h, req.argv.Elem())
-	req.replyv = reflect.ValueOf(fmt.Sprintf("geerpc resp %d", req.h.Seq))
+	req.replyv = reflect.ValueOf(fmt.Sprintf("tinyrpc resp %d", req.h.Seq))
 	server.sendResponse(cc, req.h, req.replyv.Interface(), sending)
 }
 
