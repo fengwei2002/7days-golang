@@ -1,5 +1,17 @@
 package codec
 
+/*
+
+一个典型的 rpc 调用如下
+err = client.Call("servername.methodName", args, &reply)
+
+客户端发送的请求包括 服务名, 方法名，参数
+
+服务端的响应内容包括错误 error 返回值 reply 两个
+
+将请求和响应中的参数和返回值抽象为 body 剩余的信息放在 header 中
+
+*/
 import (
 	"io"
 )
@@ -23,7 +35,7 @@ type NewCodecFunc func(closer io.ReadWriteCloser) Codec
 type Type string
 
 const (
-	GobType  Type = "application/gob"
+	GobType  Type = "application/gob"  // 主要实现
 	JsonType Type = "application/json" // not implemented
 )
 

@@ -1,3 +1,2 @@
-module tiny-rpc
-
+module tinygrpc
 go 1.18
