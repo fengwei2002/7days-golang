@@ -10,9 +10,9 @@ import (
 // A Group is a cache namespace and associated data loaded spread over
 // how to load data hand over to the user
 type Group struct {
-	name      string
-	getter    Getter
-	mainCache cache
+	name      string // 一个 group 可以认为是一个缓存的命名空间，每个 group 都拥有一个唯一的名称 name
+	getter    Getter // 缓存没有命中的时候获取源数据的 callback
+	mainCache cache  // 实现的并发缓存（lru + lock）
 	peers     PeerPicker
 	loader    *singleflight.Group // 保证每一个 key 都只会 fetch 一次
 }
@@ -29,6 +29,9 @@ type GetterFunc func(key string) ([]byte, error)
 func (f GetterFunc) Get(key string) ([]byte, error) {
 	return f(key)
 }
+
+// 函数类型实现一个接口，就叫做接口型函数
+// 方便使用者在调用的时候，既可以传入函数作为参数，也能够传入实现了这个接口的结构体作为参数
 
 var (
 	mu     sync.RWMutex
@@ -68,7 +71,7 @@ func (g *Group) Get(key string) (ByteView, error) {
 	}
 
 	if v, ok := g.mainCache.get(key); ok {
-		log.Println("[GeeCache] hit")
+		log.Println("[kooCache] hit")
 		return v, nil
 	}
 

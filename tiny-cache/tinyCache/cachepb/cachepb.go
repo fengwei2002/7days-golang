@@ -107,11 +107,11 @@ func (m *Response) GetValue() []byte {
 }
 
 func init() {
-	proto.RegisterType((*Request)(nil), "geecachepb.Request")
-	proto.RegisterType((*Response)(nil), "geecachepb.Response")
+	proto.RegisterType((*Request)(nil), "koocachepb.Request")
+	proto.RegisterType((*Response)(nil), "koocachepb.Response")
 }
 
-func init() { proto.RegisterFile("geecachepb.proto", fileDescriptor_889d0a4ad37a0d42) }
+func init() { proto.RegisterFile("koocachepb.proto", fileDescriptor_889d0a4ad37a0d42) }
 
 var fileDescriptor_889d0a4ad37a0d42 = []byte{
 	// 148 bytes of a gzipped FileDescriptorProto

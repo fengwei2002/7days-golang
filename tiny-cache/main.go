@@ -32,19 +32,19 @@ func createGroup() *tinyCache.Group {
 		}))
 }
 
-func startCacheServer(addr string, addrs []string, gee *tinyCache.Group) {
+func startCacheServer(addr string, addrs []string, koo *tinyCache.Group) {
 	peers := tinyCache.NewHTTPPool(addr)
 	peers.Set(addrs...)
-	gee.RegisterPeers(peers)
+	koo.RegisterPeers(peers)
 	log.Println("tinyCache is running at", addr)
 	log.Fatal(http.ListenAndServe(addr[7:], peers))
 }
 
-func startAPIServer(apiAddr string, gee *tinyCache.Group) {
+func startAPIServer(apiAddr string, koo *tinyCache.Group) {
 	http.Handle("/api", http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			key := r.URL.Query().Get("key")
-			view, err := gee.Get(key)
+			view, err := koo.Get(key)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -77,11 +77,11 @@ func main() {
 		addrs = append(addrs, v)
 	}
 
-	gee := createGroup()
+	koo := createGroup()
 	if api {
-		go startAPIServer(apiAddr, gee)
+		go startAPIServer(apiAddr, koo)
 	}
-	startCacheServer(addrMap[port], addrs, gee)
+	startCacheServer(addrMap[port], addrs, koo)
 }
 
 // 							是

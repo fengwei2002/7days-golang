@@ -1,5 +1,7 @@
 package tinyCache
 
+// byteView 表示缓存值 缓存值的抽象和封装
+
 // A ByteView holds an immutable view of bytes.
 type ByteView struct {
 	b []byte

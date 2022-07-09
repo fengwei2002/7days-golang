@@ -1,6 +1,7 @@
 package tinyCache
 
 // cache use mutex to protect lru entries
+// 操作 lru 的时候加锁 并发控制
 
 import (
 	"sync"

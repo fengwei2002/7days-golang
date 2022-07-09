@@ -22,7 +22,7 @@ func TestGet(t *testing.T) {
 	}
 }
 
-func TestRemoveOldest(t *testing.T) {
+func TestRemoveOldest(t *testing.T) { // 用来测试使用内存超过了设定值的时候，是否会触发 无用 节点的删除
 	k1, k2, k3 := "key1", "key2", "k3"
 	v1, v2, v3 := "value1", "value2", "v3"
 	capacity := len(k1 + k2 + v1 + v2)
@@ -36,7 +36,7 @@ func TestRemoveOldest(t *testing.T) {
 	}
 }
 
-func TestOnEvicted(t *testing.T) {
+func TestOnEvicted(t *testing.T) { // 测试回调函数能否被调用
 	keys := make([]string, 0)
 	callback := func(key string, value Value) {
 		keys = append(keys, key)

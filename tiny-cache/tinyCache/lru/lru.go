@@ -8,7 +8,7 @@ type Cache struct {
 	nowBytes int64
 	ll       *list.List
 	cache    map[string]*list.Element
-	// optional and executed when an entry is purged.
+	// 在清除 item 的时候可以执行，例如先存入到某一个地方
 	OnEvicted func(key string, value Value)
 }
 
