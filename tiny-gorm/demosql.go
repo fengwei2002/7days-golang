@@ -2,6 +2,7 @@ package tinygorm
 
 import (
 	"database/sql"
+	"fmt"
 	_ "github.com/mattn/go-sqlite3"
 	"log"
 )
@@ -11,8 +12,11 @@ import (
 go 标准库 database/sql 的使用示例
 */
 
-func sqlUseDemo() {
-	db, _ := sql.Open("sqlite3", "gee.db")
+func SqlUseDemo() {
+	db, err := sql.Open("sqlite3", "koo.db")
+	if err != nil {
+		fmt.Println("failed to open database: ", err)
+	}
 	// 打开指定的数据表，使用指定的数据库
 	defer func() { _ = db.Close() }()
 	// 最后要记得将数据库关闭
@@ -30,7 +34,7 @@ func sqlUseDemo() {
 		log.Println(affected)
 	}
 
-	row := db.QueryRow("SELECT Name FROM User LIMIT 1")
+	row := db.QueryRow("SELECT Name FROM User LIMIT 2")
 	// 返回值类型是 *sql.Row row.Scan 接受一个或者多个指针作为参数
 	// 可以获取对应列的值
 
@@ -39,3 +43,7 @@ func sqlUseDemo() {
 		log.Println(name)
 	}
 }
+
+// konng:/c/code/go/golang-kit/tiny-gorm/cmd_test (main)$ go run main.go
+// 2022/07/13 20:52:32 2
+// 2022/07/13 20:52:32 Tom

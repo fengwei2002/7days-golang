@@ -5,7 +5,7 @@ import (
 )
 
 type User struct {
-	Name string `geeorm:"PRIMARY KEY"`
+	Name string `kooorm:"PRIMARY KEY"`
 	Age  int
 }
 

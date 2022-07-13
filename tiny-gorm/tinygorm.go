@@ -11,15 +11,13 @@ import (
 /*
 
 session 负责和数据库的交互
-
-那么交互之前的准备工作，比如连接/测试数据库
-交互之后的收尾工作 （关闭连接）等就交给 engine 实现
-
-engine 是 tinygorm 和 用户交互的入口
+	那么交互之前的准备工作，比如连接/测试数据库
+	交互之后的收尾工作 （关闭连接）等就交给 engine 实现
+engine 是用户交互的入口
 
 */
 
-// Engine is the main struct of geeorm, manages all db sessions and transactions.
+// Engine is the main struct of orm, manages all db sessions and transactions.
 type Engine struct {
 	db      *sql.DB
 	dialect dialect.Dialect
@@ -52,7 +50,7 @@ func (engine *Engine) Close() {
 	if err := engine.db.Close(); err != nil {
 		log.Error("Failed to close database")
 	}
-	log.Info("Close database success")
+	log.Info("Close database success, Bye!")
 }
 
 func (engine *Engine) NewSession() *session.Session {

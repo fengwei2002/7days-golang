@@ -2,6 +2,10 @@ package dialect
 
 import "reflect"
 
+/*
+使用 dialect 抽象出各个数据库的差异部分
+*/
+
 var dialectsMap = map[string]Dialect{}
 
 // Dialect is an interface contains methods that a dialect has to implement
@@ -11,8 +15,9 @@ type Dialect interface {
 }
 
 // RegisterDialect register a dialect to the global variable
+// 如果增加了对某个数据库的支持，那么调用 RegisterDialect 就可以将他注册到全局的 map 中
 func RegisterDialect(name string, dialect Dialect) {
-	dialectsMap[name] = dialect // 如果增加了对某个数据库的支持，那么调用 RegisterDialect 就可以将他注册到全局的 map 中
+	dialectsMap[name] = dialect
 }
 
 // GetDialect Get the dialect from global variable if it exists

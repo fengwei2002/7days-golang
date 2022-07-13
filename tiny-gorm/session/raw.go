@@ -27,7 +27,7 @@ type Session struct {
 	clause   clause.Clause
 }
 
-// New creates a instance of Session
+// New creates an instance of Session
 func New(db *sql.DB, dialect dialect.Dialect) *Session {
 	return &Session{
 		db:      db,
@@ -36,6 +36,7 @@ func New(db *sql.DB, dialect dialect.Dialect) *Session {
 }
 
 // Clear initialize the state of a session
+// 清空内容但是不关闭会话，让后来的代码可以多次使用
 func (s *Session) Clear() {
 	s.sql.Reset()
 	s.sqlVars = nil
@@ -79,6 +80,7 @@ func (s *Session) QueryRows() (rows *sql.Rows, err error) {
 }
 
 // Raw appends sql and sqlVars
+// 使用 raw 方法修改 sql 语句和 占位符使用的具体 value
 func (s *Session) Raw(sql string, values ...interface{}) *Session {
 	s.sql.WriteString(sql)
 	s.sql.WriteString(" ")

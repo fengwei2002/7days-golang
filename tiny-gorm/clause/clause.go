@@ -4,7 +4,12 @@ import (
 	"strings"
 )
 
+/*
+一个 sql 查询语句一般包含很多个子句 clause
+*/
+
 // Clause contains SQL conditions
+// 相当于一个二维数组包含子句的结构
 type Clause struct {
 	sql     map[Type]string
 	sqlVars map[Type][]interface{}
@@ -21,6 +26,9 @@ const (
 	LIMIT
 	WHERE
 	ORDERBY
+	UPDATE
+	DELETE
+	COUNT
 )
 
 // Set adds a sub-clause of specific type

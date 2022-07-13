@@ -7,17 +7,21 @@ import (
 )
 
 /*
-
-实现最主要的 table to struct
-
+实现最主要的 object to table
 */
 
 // Field represents a column of database
 type Field struct {
 	Name string // 字段名
 	Type string // 类型 type
-	Tag  string // 约束条件 tag
+	Tag  string // 约束条件 tag 例如不能为空，是主键等等
 }
+
+// 例如：CREATE TABLE `User` (`Name` text PRIMARY KEY, `Age` integer);
+// type User struct {
+// 	Name string `tinyorm:"PRIMARY KEY"`
+// 	Age int
+// }
 
 // Schema represents a table of database
 type Schema struct {
@@ -85,7 +89,7 @@ INSERT INTO table_name(col1, col2, col3, ...) VALUES
     (B1, B2, B3, ...),
     ...
 在 ORM 框架中期望 Insert 的调用方式如下：
-s := orm.NewEngine("sqlite3", "gee.db").NewSession()
+s := orm.NewEngine("sqlite3", "koo.db").NewSession()
 u1 := &User{Name: "Tom", Age: 18}
 u2 := &User{Name: "Sam", Age: 25}
 s.Insert(u1, u2, ...)

@@ -6,6 +6,7 @@ import (
 )
 
 func TestClause_Set(t *testing.T) {
+	// 测试一下将结构体映射为 insert 语句 的函数能不能行
 	var clause Clause
 	clause.Set(INSERT, "User", []string{"Name", "Age"})
 	sql := clause.sql[INSERT]
@@ -17,6 +18,7 @@ func TestClause_Set(t *testing.T) {
 }
 
 func testSelect(t *testing.T) {
+	// 将 clause 中的内容映射为 select 语句 带有后缀选项
 	var clause Clause
 	clause.Set(LIMIT, 3)
 	clause.Set(SELECT, "User", []string{"*"})

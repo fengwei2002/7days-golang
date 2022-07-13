@@ -5,6 +5,7 @@ import (
 	"testing"
 )
 
+// 测试是否可以正常通过反射得到 value
 func TestDataTypeOf(t *testing.T) {
 	dial := &sqlite3{}
 	cases := []struct {

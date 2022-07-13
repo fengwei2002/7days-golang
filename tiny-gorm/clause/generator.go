@@ -9,15 +9,17 @@ import (
 实现各个子句的生成规则
 
 查询语句一般由很多个 子句 clause 组成
+
 SELECT col1, col2, ...
     FROM table_name
     WHERE [ conditions ]
     GROUP BY col1
     HAVING [ conditions ]
-也就是说，如果想要一次构造出完整的 sql 语句是比较困难的，因此将 构造 sql 语句这一部分独立出来，放在子 package clause 中实现
 
-在这里 实现各个子句的生成规则
+现在得到了一个 二维的语句数组 clause
+在 generator 这里 实现各个子句的生成规则 根据二维数组的每一列生成具体的 sql 语句
 
+主要：insert 和 select 带后缀选项
 */
 
 type generator func(values ...interface{}) (string, []interface{})
@@ -32,6 +34,9 @@ func init() {
 	generators[LIMIT] = _limit
 	generators[WHERE] = _where
 	generators[ORDERBY] = _orderBy
+	generators[UPDATE] = _update
+	generators[DELETE] = _delete
+	generators[COUNT] = _count
 }
 
 func genBindVars(num int) string {
@@ -90,4 +95,24 @@ func _where(values ...interface{}) (string, []interface{}) {
 
 func _orderBy(values ...interface{}) (string, []interface{}) {
 	return fmt.Sprintf("ORDER BY %s", values[0]), []interface{}{}
+}
+
+func _update(values ...interface{}) (string, []interface{}) {
+	tableName := values[0]
+	m := values[1].(map[string]interface{})
+	var keys []string
+	var vars []interface{}
+	for k, v := range m {
+		keys = append(keys, k+" = ?")
+		vars = append(vars, v)
+	}
+	return fmt.Sprintf("UPDATE %s SET %s", tableName, strings.Join(keys, ", ")), vars
+}
+
+func _delete(values ...interface{}) (string, []interface{}) {
+	return fmt.Sprintf("DELETE FROM %s", values[0]), []interface{}{}
+}
+
+func _count(values ...interface{}) (string, []interface{}) {
+	return _select(values[0], []string{"count(*)"})
 }

@@ -7,7 +7,7 @@ import (
 )
 
 /*
-增加 dialect 对 sqlite 的支持
+增加 dialect 对 sqlite 的支持 抽象出各个数据库的差异的部分
 */
 
 type sqlite3 struct{}
@@ -18,7 +18,10 @@ func init() { // 包在第一次加载的时候，就将 sqlite3 的 dialect 注
 	RegisterDialect("sqlite3", &sqlite3{})
 }
 
-// DataTypeOf Get Data Type for sqlite3 Dialect 将 go 语言的类型映射为 sqlite 的数据类型
+// 实现 Dialect 需要的两个接口
+
+// DataTypeOf Get Data Type for sqlite3 Dialect
+// 将 go 语言的类型映射为 sqlite 的数据类型 按照 string 返回
 func (s *sqlite3) DataTypeOf(typ reflect.Value) string {
 	switch typ.Kind() {
 	case reflect.Bool:

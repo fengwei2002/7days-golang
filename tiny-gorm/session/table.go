@@ -53,6 +53,7 @@ func (s *Session) DropTable() error {
 }
 
 // HasTable returns true of the table exists
+// TableExistSQL 在 dialect 中已经实现了
 func (s *Session) HasTable() bool {
 	sql, values := s.dialect.TableExistSQL(s.RefTable().Name)
 	row := s.Raw(sql, values...).QueryRow()
