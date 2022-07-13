@@ -46,6 +46,7 @@ func (s *Session) CallMethod(method string, value interface{}) {
 	return
 }
 
+// 可以改成接口，判断是否实现了某个接口，实现了就调用
 // Hooks constants
 // const (
 // 	BeforeQuery  = "BeforeQuery"

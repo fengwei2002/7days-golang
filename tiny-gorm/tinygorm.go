@@ -56,3 +56,29 @@ func (engine *Engine) Close() {
 func (engine *Engine) NewSession() *session.Session {
 	return session.New(engine.db, engine.dialect)
 }
+
+// 在主程 中为用户提供傻瓜式的调用事务的接口
+
+// TxFunc will be called between tx.Begin() and tx.Commit()
+// https://stackoverflow.com/questions/16184238/database-sql-tx-detecting-commit-or-rollback
+type TxFunc func(*session.Session) (interface{}, error)
+
+// Transaction executes sql wrapped in a transaction, then automatically commit if no error occurs
+func (engine *Engine) Transaction(f TxFunc) (result interface{}, err error) {
+	s := engine.NewSession()
+	if err := s.Begin(); err != nil {
+		return nil, err
+	}
+	defer func() {
+		if p := recover(); p != nil {
+			_ = s.Rollback()
+			panic(p) // re-throw panic after Rollback
+		} else if err != nil {
+			_ = s.Rollback() // err is non-nil; don't change it
+		} else {
+			err = s.Commit() // err is nil; if Commit returns error update err
+		}
+	}()
+
+	return f(s)
+}

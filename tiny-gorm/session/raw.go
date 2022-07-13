@@ -25,6 +25,9 @@ type Session struct {
 	dialect  dialect.Dialect
 	refTable *schema.Schema
 	clause   clause.Clause
+
+	tx *sql.Tx // 添加对事务的支持，当 tx 不为空的时候，使用 tx 执行 sql 语句，否则使用 db 执行 sql 语句
+	// 这样兼容了原有的执行方式， 又提供了对事务的支持
 }
 
 // New creates an instance of Session
@@ -43,8 +46,21 @@ func (s *Session) Clear() {
 	s.clause = clause.Clause{}
 }
 
-// DB returns *sql.DB
-func (s *Session) DB() *sql.DB {
+// CommonDB is a minimal function set of db
+type CommonDB interface {
+	Query(query string, args ...interface{}) (*sql.Rows, error)
+	QueryRow(query string, args ...interface{}) *sql.Row
+	Exec(query string, args ...interface{}) (sql.Result, error)
+}
+
+var _ CommonDB = (*sql.DB)(nil)
+var _ CommonDB = (*sql.Tx)(nil)
+
+// DB returns tx if a tx begins. otherwise return *sql.DB
+func (s *Session) DB() CommonDB {
+	if s.tx != nil {
+		return s.tx
+	}
 	return s.db
 }
 
