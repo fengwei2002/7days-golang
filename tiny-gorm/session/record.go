@@ -15,6 +15,7 @@ record 用于实现 将平铺的 RecordValues 使用 clause 转换为具体的�
 func (s *Session) Insert(values ...interface{}) (int64, error) {
 	recordValues := make([]interface{}, 0)
 	for _, value := range values {
+		s.CallMethod(BeforeInsert, value)
 		table := s.Model(value).RefTable()
 		s.clause.Set(clause.INSERT, table.Name, table.FieldNames)
 		recordValues = append(recordValues, table.RecordValues(value))
@@ -26,7 +27,7 @@ func (s *Session) Insert(values ...interface{}) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-
+	s.CallMethod(AfterInsert, nil)
 	return result.RowsAffected()
 }
 
@@ -34,13 +35,14 @@ func (s *Session) Insert(values ...interface{}) (int64, error) {
 // 传入一个切片指针，查询的结果保存在切片中
 // insert 需要将存在的对象的每一个字段平铺展开，而 find 需要根据平铺的内容构建出对象
 func (s *Session) Find(values interface{}) error {
+	s.CallMethod(BeforeQuery, nil)
 	destSlice := reflect.Indirect(reflect.ValueOf(values))
 	destType := destSlice.Type().Elem()
 	table := s.Model(reflect.New(destType).Elem().Interface()).RefTable()
 
 	s.clause.Set(clause.SELECT, table.Name, table.FieldNames)
 	sql, vars := s.clause.Build(clause.SELECT, clause.WHERE, clause.ORDERBY, clause.LIMIT)
-	rows, err := s.Raw(sql, vars...).QueryRows() // rows 调用原生 db 的 queryRows
+	rows, err := s.Raw(sql, vars...).QueryRows()
 	if err != nil {
 		return err
 	}
@@ -54,6 +56,7 @@ func (s *Session) Find(values interface{}) error {
 		if err := rows.Scan(values...); err != nil {
 			return err
 		}
+		s.CallMethod(AfterQuery, dest.Addr().Interface())
 		destSlice.Set(reflect.Append(destSlice, dest))
 	}
 	return rows.Close()
@@ -63,6 +66,7 @@ func (s *Session) Find(values interface{}) error {
 // also support kv list: "Name", "Tom", "Age", 18, ....
 // 子句的 generator 已经准备好了，接下来和 insert find 等方法一样，按照一定的顺序拼接 sql 语句并调用即可
 func (s *Session) Update(kv ...interface{}) (int64, error) {
+	s.CallMethod(BeforeUpdate, nil)
 	m, ok := kv[0].(map[string]interface{})
 	if !ok { // 如果不是一个 map 类型，就转换为 map 类型，供 generator 使用
 		m = make(map[string]interface{})
@@ -76,17 +80,20 @@ func (s *Session) Update(kv ...interface{}) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
+	s.CallMethod(AfterUpdate, nil)
 	return result.RowsAffected()
 }
 
 // Delete records with where clause
 func (s *Session) Delete() (int64, error) {
+	s.CallMethod(BeforeDelete, nil)
 	s.clause.Set(clause.DELETE, s.RefTable().Name)
 	sql, vars := s.clause.Build(clause.DELETE, clause.WHERE)
 	result, err := s.Raw(sql, vars...).Exec()
 	if err != nil {
 		return 0, err
 	}
+	s.CallMethod(AfterDelete, nil)
 	return result.RowsAffected()
 }
 
