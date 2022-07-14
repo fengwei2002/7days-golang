@@ -41,6 +41,9 @@ User
 INSERT INTO User(Name, Age) VALUES ("Tom", 18), ("Jack", 25);
 ```
 
-- log 是支持分级的 log 库 
-- 核心结构 session 实现和数据库的交互 
-- 
+- 在框架中如何屏蔽不同的数据库之间的差异 
+- 数据库中的 table 和 struct 是怎么映射的 
+- 使用链式调用优雅的模拟查询条件
+- 为什么要提供 hooks 功能，如何提供 
+- 事务如何集成 
+- 数据库迁移

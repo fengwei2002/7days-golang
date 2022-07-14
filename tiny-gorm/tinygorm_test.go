@@ -3,6 +3,7 @@ package tinygorm
 import (
 	"errors"
 	_ "github.com/mattn/go-sqlite3"
+	"reflect"
 	"testing"
 	"tinygorm/session"
 )
@@ -70,4 +71,27 @@ func TestEngine_Transaction(t *testing.T) {
 	t.Run("commit", func(t *testing.T) {
 		transactionCommit(t)
 	})
+}
+
+// 数据库迁移方法的测试，假设一开始 User 包含两个字段 Name 和 XXX  在一次业务修改之后变成了 Name 和 Age
+// 就是要删除 XXX 字段，然后新增字段 Age
+func TestEngine_Migrate(t *testing.T) {
+	engine := OpenDB(t)
+	defer engine.Close()
+	s := engine.NewSession()
+	_, _ = s.Raw("DROP TABLE IF EXISTS User;").Exec()
+	_, _ = s.Raw("CREATE TABLE User(Name text PRIMARY KEY, XXX integer);").Exec()
+	_, _ = s.Raw("INSERT INTO User(`Name`) values (?), (?)", "Tom", "Sam").Exec()
+	err := engine.Migrate(&User{})
+	if err != nil {
+		error.Error(err)
+		return
+	}
+
+	// 调用 Migrate 之后查看 数据库中的内容该了没
+	rows, _ := s.Raw("SELECT * FROM User").QueryRows()
+	columns, _ := rows.Columns()
+	if !reflect.DeepEqual(columns, []string{"Name", "Age"}) {
+		t.Fatal("Failed to migrate table User, got columns", columns)
+	}
 }
