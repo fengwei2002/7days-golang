@@ -7,10 +7,11 @@ import (
 	"log"
 )
 
+// GobCodec 实现 Codec 要求的接口
 type GobCodec struct {
-	conn io.ReadWriteCloser
-	buf  *bufio.Writer
-	dec  *gob.Decoder
+	conn io.ReadWriteCloser // 连接实例
+	buf  *bufio.Writer      // 为了防止阻塞而创建的 带缓冲的 writer
+	dec  *gob.Decoder       // 对应的编码器和解码器
 	enc  *gob.Encoder
 }
 

@@ -1,7 +1,3 @@
-// Copyright 2009 The Go Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
-
 package koorpc
 
 import (
@@ -19,10 +15,24 @@ import (
 	"time"
 )
 
+/*
+例如 http 报文，分成 header 和 body 两个部分
+
+body 的格式和长度通过 header 中的 content-type 和 content-length 指定，服务端通过解析 header 就知道怎么从 body 中读取需要的信息
+
+对于 rpc 协议来说 这部分内容需要自己定义，为了提升性能通常使用固定的字节数量来协商相关的信息，第一个字节用来表示序列化方式，第二个字节用来表示压缩方式
+第3到6指定 header 的长度，7-10 指定 body 的长度
+这样就可以用一个字节 或者几个字节，在两侧提取出具体使用的信息，而不用将信息进行传送
+*/
+
 const MagicNumber = 0x3bef5c
 
+// Option 协商具体的信息，为了实现简单，使用 json 编码 option，后续的 header 和 body 的编码方式由 option 中的 codetype 指定
+// 服务端首先使用 json 解码 option 然后通过 option 的 codeType 解码其他部分
+// | Option{MagicNumber: xxx, CodecType: xxx} | Header{ServiceMethod ...} | Body interface{} |
+// | <------      固定 JSON 编码      ------>  | <-------   编码方式由 CodeType 决定   ------->|
 type Option struct {
-	MagicNumber    int           // MagicNumber marks this's a koorpc request
+	MagicNumber    int           // MagicNumber marks this as a koorpc request
 	CodecType      codec.Type    // client may choose different Codec to encode body
 	ConnectTimeout time.Duration // 0 means no limit
 	HandleTimeout  time.Duration
